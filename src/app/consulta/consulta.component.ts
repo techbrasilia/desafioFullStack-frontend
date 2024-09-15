@@ -5,12 +5,14 @@ import { ApiService } from '../services/api.service';
 import { Router } from '@angular/router';
 import { IUsuario } from '../model/IUsuario';
 import { Usuario } from '../model/Usuario';
-
+import { MatInputModule } from "@angular/material/input"
+import { MatSelectModule } from "@angular/material/select"
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-consulta',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatInputModule, MatSelectModule, MatFormFieldModule],
   templateUrl: './consulta.component.html',
   styleUrl: './consulta.component.css'
 })
