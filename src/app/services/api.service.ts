@@ -9,6 +9,7 @@ export class ApiService {
 
   private apiUrl = 'http://localhost:8080/api';
   private credentials: string | null = null;  // Armazenar as credenciais codificadas
+  public tokenKey = 'authToken';
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' })
@@ -16,22 +17,10 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  // login(username: string, password: string): Observable<any> {
-  //   console.log('URL: ', this.apiUrl)
-
-  //   let data = {
-  //     'username': username,
-  //     'password': password
-  //   }
-  //   return this.http.post(`${this.apiUrl}/login`, JSON.stringify(data), this.httpOptions);
-  // }
-
   login(username: string, password: string): Observable<any> {
-    // Codificar username e password em Base64 para o Basic Auth
     const encodedCredentials = btoa(`${username}:${password}`);
     this.credentials = encodedCredentials;
-    console.log('URL: ', this.apiUrl)
-    // Fazer a requisição de login (opcional, pode ser utilizado para validar o login na API)
+    localStorage.setItem(this.tokenKey, String(this.credentials));
     return this.http.post(`${this.apiUrl}/auth/login`, {}, {
       headers: {
         'Authorization': `Basic ${encodedCredentials}`
@@ -43,11 +32,35 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/usuarios`, { nome, senha, email, perfil })
   }
 
+  update(id: number, nome: string, email: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/usuarios/${id}`, { nome, email }, {
+      headers: {
+        'Authorization': `Basic ${this.getCredentials()}`
+      }
+    })
+  }
+
+  getUser(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/usuarios/${id}`, {
+      headers: {
+        'Authorization': `Basic ${this.getCredentials()}`
+      }
+    });
+  }
+
   getCredentials(): string | null {
-    return this.credentials;
+    return this.credentials || localStorage.getItem(this.tokenKey);
   }
 
   logout(): void {
-    this.credentials = null;  // Limpar as credenciais quando o usuário fizer logout
+    console.log('teste 1')
+    this.http.post(`${this.apiUrl}/auth/logout`, {}, {
+      headers: {
+        'Authorization': `Basic ${this.getCredentials()}`
+      }
+    }).pipe().subscribe(r => {
+      console.log('teste 2')
+      localStorage.clear();
+    });
   }
 }

@@ -1,10 +1,8 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { Component, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
-import { response } from 'express';
-
 
 @Component({
   selector: 'app-login',
@@ -13,21 +11,26 @@ import { response } from 'express';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
+
 export class LoginComponent {
+
+  localStorage: any = null;
   email: string = '';
   senha: string = '';
 
-  constructor(private router: Router, private api: ApiService) { }
+  constructor(private router: Router, @Inject(DOCUMENT) private document: Document, private api: ApiService) {
+    this.localStorage = document.defaultView?.localStorage;
+  }
 
   onSubmit() {
-    // Aqui você faria a chamada à API para autenticação
     this.api.login(this.email, this.senha).subscribe({
       next: (response) => {
-        console.log('res: ', response)
+        this.localStorage.setItem('usuariolog', btoa(JSON.stringify(response.nome)));
+        this.router.navigate(['/consulta']);
       },
       error: (error) => {
         console.log('Login failed:', error);
-        // Verifique o conteúdo do erro retornado
+        this.senha = '';
         if (error.status === 401) {
           alert('Credenciais inválidas');
         } else {
@@ -35,9 +38,5 @@ export class LoginComponent {
         }
       }
     })
-
-
-    // Redirecionar para outra página em caso de sucesso
-    this.router.navigate(['/register']);
   }
 }
