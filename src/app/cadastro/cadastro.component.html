@@ -8,20 +8,10 @@
             Logout
         </button>
     </div>
-    <div>
-        <h2>Consultar usuario</h2>
-        <form (ngSubmit)="onSubmit()">
-            <div>
-                <label for="email">E-mail</label>
-                <input type="text" id="email" [(ngModel)]="usuario.email" name="email" required>
-            </div>
 
-            <button type="submit">Consultar</button>
-        </form>
-    </div>
-    <div *ngIf="usuario.nome != null">
-        <h2>Dados do usuario</h2>
-        <form (ngSubmit)="handleEdit()">
+    <div>
+        <h2>Novo Usuario</h2>
+        <form (ngSubmit)="onSubmit()">
             <div>
                 <label for="nome">Nome</label>
                 <input type="text" id="nome" [(ngModel)]="usuario.nome" name="nome" required>
@@ -30,9 +20,19 @@
                 <label for="email">E-mail</label>
                 <input type="text" id="email" [(ngModel)]="usuario.email" name="email" required>
             </div>
+            <div>
+                <label for="senha">Senha</label>
+                <input type="text" id="senha" [(ngModel)]="usuario.senha" name="senha" required>
+            </div>
+            <div>
+                <label for="perfil">Perfil</label>
+                <select id="perfil" [(ngModel)]="usuario.perfil" name="perfil" required>
+                    <option value="1">ADMIN</option>
+                    <option value="2">USER</option>
+                </select>
+            </div>
 
-            <button *ngIf="isPodeEditar" type="submit">Editar</button>
-            <button type="reset">Limpar</button>
+            <button type="submit">Salvar</button>
         </form>
     </div>
 </div>

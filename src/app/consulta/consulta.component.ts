@@ -3,6 +3,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 import { Router } from '@angular/router';
+import { IUsuario } from '../model/IUsuario';
+import { Usuario } from '../model/Usuario';
+
 
 @Component({
   selector: 'app-consulta',
@@ -11,25 +14,19 @@ import { Router } from '@angular/router';
   templateUrl: './consulta.component.html',
   styleUrl: './consulta.component.css'
 })
+
 export class ConsultaComponent {
 
   isPodeEditar = false;
   localStorage: any = null;
-  usuario = {
-    id: '',
-    nome: '',
-    email: '',
-    senha: '',
-
-  }
+  usuario: IUsuario | any = new Usuario();
 
   constructor(private router: Router, @Inject(DOCUMENT) private document: Document, private api: ApiService) {
     this.localStorage = document.defaultView?.localStorage;
 
     if (this.localStorage) {
-      const teste = this.localStorage?.getItem(this.api.tokenKey);
-      console.log('t:', teste)
-      if (!teste) {
+      const usuarioSessao = this.localStorage?.getItem(this.api.tokenKey);
+      if (!usuarioSessao) {
         this.router.navigate(['/']);
       }
     }
@@ -38,9 +35,8 @@ export class ConsultaComponent {
 
   onSubmit() {
     this.isPodeEditar = false;
-    this.api.getUser(Number(this.usuario.id)).subscribe({
+    this.api.getUser(this.usuario.email).subscribe({
       next: (response) => {
-        console.log('res: ', response);
         this.usuario.id = response.id;
         this.usuario.nome = response.nome;
         this.usuario.email = response.email;
@@ -88,6 +84,15 @@ export class ConsultaComponent {
   logout() {
     this.api.logout();
     this.router.navigate(['/']);
+  }
+
+  clearUser() {
+    this.isPodeEditar = false;
+    this.usuario = new Usuario();
+  }
+
+  newUser() {
+    this.router.navigate(['/cadastro']);
   }
 
 }
